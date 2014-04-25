@@ -64,7 +64,7 @@ check_password_test: check_password
 	$(CC) -g -O2 -DCONFIG_FILE="\"$(CONFIG)\"" -fpic $(INCS) -Wall check_password_test.c -o cpass -L. -llber -lcheck_password
 
 install: check_password
-	cp -f check_password.so /usr/lib/openldap/modules/
+	cp -f check_password.so $(LIBDIR)
 
 clean:
 	$(RM) check_password.o check_password.so check_password.lo libcheck_password.so cpass check_password.conf
