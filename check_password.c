@@ -61,8 +61,12 @@ struct config_entry {
     { "min_lower", NULL, "0"},
     { "min_digit", NULL, "0"},
     { "min_punct", NULL, "0"},
+    { "maxRepeatChars", NULL, "0"},
     { "max_consecutive_per_class", NULL, "5"},
     { NULL, NULL, NULL }};
+
+int nmaxRepeatChars = 0;  // Flag to check repeated characters value of 0 means there are no repeated characters
+int maxRepeatChars = 0;   // Max number of characters allowed to repeat
 
 int print_config_entries() {
   struct config_entry* centry = config_entries;
@@ -385,6 +389,7 @@ check_password (char *pPasswd, char **ppErrStr, Entry *pEntry)
 	min_lower = get_config_entry_int("min_lower");
 	min_digit = get_config_entry_int("min_digit");
 	min_punct = get_config_entry_int("min_punct");
+	maxRepeatChars = get_config_entry_int("maxRepeatChars");
   max_consecutive_per_class = get_config_entry_int("max_consecutive_per_class");
 
   /* Check Max Consecutive Per Class first since this has the most likelihood
@@ -441,9 +446,35 @@ check_password (char *pPasswd, char **ppErrStr, Entry *pEntry)
 	 * punctuation character
 	 */
 
+	int ascii[100]={0}; /* Array for keeping count of repeated characters */
 	for ( i = 0; i < nLen; i++ ) {
 
 		//if ( nQuality >= min_quality ) break;
+
+
+		/* Check if there are repeated characters than the limit allowed by maxRepeatChars */
+
+		if(maxRepeatChars == 0 || maxRepeatChars == -1 )
+                {
+                        if ( nQuality >= min_quality ) break;
+
+                }
+                else
+                {
+                        if (!nmaxRepeatChars)
+                        {
+                                ascii[pPasswd[i]-33]=ascii[pPasswd[i]-33]+1;   /* first 32 characters are non-printable*/
+                                if(ascii[pPasswd[i]-33] > maxRepeatChars)
+                                {
+                                        nmaxRepeatChars=1;
+                                        syslog(LOG_NOTICE, "check_password: Found characters repeated more than %d times . Repeated characters Test Failed", maxRepeatChars);
+                                }
+                        }
+                }
+
+
+
+
 
 		if ( islower (pPasswd[i]) ) {
 			min_lower--;
@@ -501,6 +532,29 @@ check_password (char *pPasswd, char **ppErrStr, Entry *pEntry)
 			continue;
 		}
 	}
+
+
+
+	if(maxRepeatChars != 0 && maxRepeatChars != -1)
+        {
+                 if (!nmaxRepeatChars)
+                {
+                        nQuality++;
+                        syslog(LOG_NOTICE, "check_password: Found no characters repeated more than %d times - quality raise %d",maxRepeatChars, nQuality);
+                }
+
+        }
+        else  /* if maxRepeatChars flag is set to 0 or -1*/
+        {
+
+                nQuality++;
+                syslog(LOG_NOTICE, "check_password: Repeated character rule doesnt apply as maxRepeatChars is 0  or not specified - quality raise %d",nQuality);
+
+        }
+
+
+
+
 
   /*
    * If you have a required field, then it should be required in the strength
