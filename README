@@ -42,6 +42,9 @@ Password checks
  - password checking can optionally be set to ensure that no more than a given
    number of characters from a character set can be used in a row.
 
+ - Check for repeated characters,if any character is repeated for more than maxRepeatChars
+   times,the password is rejected,this is case sensitive.
+
 INSTALLATION
 ------------
 Use the provided Makefile to build the module.
