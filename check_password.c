@@ -36,6 +36,8 @@
 	"Password for dn=\"%s\" is too short (%d/6)"
 #define PASSWORD_QUALITY_SZ \
   "Password for dn=\"%s\" does not pass required number of strength checks for the required character sets (%d of %d)"
+#define PASSWORD_CONTAINS_SN_SZ \
+	"Password for dn=\"%s\" contains the sn of the entry"
 #define BAD_PASSWORD_SZ \
 	"Bad password for dn=\"%s\" because %s"
 #define CONSEC_FAIL_SZ \
@@ -521,6 +523,26 @@ check_password (char *pPasswd, char **ppErrStr, Entry *pEntry)
 				nQuality, min_quality);
 		goto fail;
 	}
+
+    /*
+     * Check if the password contains the sn
+     */
+
+    Attribute *sn_attr = pEntry->e_attrs;
+
+    for(; sn_attr; sn_attr = sn_attr->a_next) {
+
+        if(strcmp(sn_attr->a_desc->ad_cname.bv_val, "sn") == 0) {
+
+            if(strstr(pPasswd, sn_attr->a_vals[0].bv_val)) {
+                mem_len = realloc_error_message(&szErrStr, mem_len,
+                        strlen(PASSWORD_CONTAINS_SN_SZ) +
+                        strlen(pEntry->e_name.bv_val));
+                sprintf (szErrStr, PASSWORD_CONTAINS_SN_SZ, pEntry->e_name.bv_val);
+                goto fail;
+            }
+        }
+    }
 
 #ifdef HAVE_CRACKLIB
 
