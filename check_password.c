@@ -36,6 +36,8 @@
 	"Password for dn=\"%s\" is too short (%d/6)"
 #define PASSWORD_QUALITY_SZ \
   "Password for dn=\"%s\" does not pass required number of strength checks for the required character sets (%d of %d)"
+#define PASSWORD_CONTAINS_SN_SZ \
+	"Password for dn=\"%s\" contains the sn of the entry"
 #define BAD_PASSWORD_SZ \
 	"Bad password for dn=\"%s\" because %s"
 #define CONSEC_FAIL_SZ \
@@ -62,6 +64,7 @@ struct config_entry {
     { "min_digit", NULL, "0"},
     { "min_punct", NULL, "0"},
     { "max_consecutive_per_class", NULL, "5"},
+    { "sn_in_passwd", NULL, "0"},
     { NULL, NULL, NULL }};
 
 int print_config_entries() {
@@ -186,6 +189,7 @@ static validator valid_word (char *word)
 		{ "min_digit", set_digit },
 		{ "min_punct", set_digit },
     { "max_consecutive_per_class", set_digit},
+        { "sn_in_passwd", set_digit },
 		{ NULL, NULL } };
 	int index = 0;
 
@@ -350,6 +354,7 @@ check_password (char *pPasswd, char **ppErrStr, Entry *pEntry)
   int max_consecutive_per_class = 0;
 	int nQuality = 0;
 	int i;
+    int sn_in_passwd = 0;
 
 	/* Set a sensible default to keep original behaviour. */
 	int min_quality = DEFAULT_QUALITY;
@@ -385,6 +390,7 @@ check_password (char *pPasswd, char **ppErrStr, Entry *pEntry)
 	min_lower = get_config_entry_int("min_lower");
 	min_digit = get_config_entry_int("min_digit");
 	min_punct = get_config_entry_int("min_punct");
+    sn_in_passwd = get_config_entry_int("sn_in_passwd");
   max_consecutive_per_class = get_config_entry_int("max_consecutive_per_class");
 
   /* Check Max Consecutive Per Class first since this has the most likelihood
@@ -521,6 +527,45 @@ check_password (char *pPasswd, char **ppErrStr, Entry *pEntry)
 				nQuality, min_quality);
 		goto fail;
 	}
+
+    /*
+     * Check if the password contains the sn
+     */
+
+    Attribute *sn_attr = pEntry->e_attrs;
+
+    if(sn_in_passwd) {
+        for(; sn_attr; sn_attr = sn_attr->a_next) {
+
+            if(strcmp(sn_attr->a_desc->ad_cname.bv_val, "sn") == 0) {
+
+#if defined(DEBUG)
+                syslog(LOG_NOTICE, "check_password: sn found in password");
+#endif
+#if defined(LDEBUG)
+                printf("check_password: sn found in password");
+#endif
+
+                if(strstr(pPasswd, sn_attr->a_vals[0].bv_val)) {
+                    mem_len = realloc_error_message(&szErrStr, mem_len,
+                            strlen(PASSWORD_CONTAINS_SN_SZ) +
+                            strlen(pEntry->e_name.bv_val));
+                    sprintf (szErrStr, PASSWORD_CONTAINS_SN_SZ, pEntry->e_name.bv_val);
+                    goto fail;
+                }
+            }
+        }
+    }
+    else {
+#if defined(DEBUG)
+          syslog(LOG_NOTICE, "check_password: sn-in-password check disabled in configuration");
+#endif
+#if defined(LDEBUG)
+          printf("check_password: sn-in-password check disabled in configuration");
+#endif
+
+    }
+
 
 #ifdef HAVE_CRACKLIB
 
