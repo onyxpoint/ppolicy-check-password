@@ -90,7 +90,6 @@ void setconf(
 }
 
 int main(void) {
-
   // Empty Config, equiv to:
   // 5,3,1,0,0,0,0
   setconf(-1,-1,-1,-1,-1,-1,-1);
@@ -109,5 +108,16 @@ int main(void) {
   testpass("Test 2.1", "Simp1e", 1);
   testpass("Test 2.2", "SimPle", 1);
   testpass("Test 2.1", "Simp1e!", 0);
+
+  setconf(1,0,0,0,0,0,0);
+  testpass("a", "Ab1,", 0);
+  testpass("a", "AAb1,", 1);
+  testpass("a", "Abb1,", 1);
+
+  setconf(3,0,0,0,0,0,0);
+  testpass("a", "AAAbbb111,,,", 0);
+  testpass("a", "AAAAbbb111,,,,", 1);
+  testpass("a", "AAAbbbb111,,,", 1);
+
   return 0;
 }
