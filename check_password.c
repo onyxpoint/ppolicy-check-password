@@ -355,18 +355,7 @@ check_password (char *pPasswd, char **ppErrStr, Entry *pEntry)
 	int min_quality = DEFAULT_QUALITY;
 	int use_cracklib = DEFAULT_CRACKLIB;
 
-	/** bail out early as cracklib will reject passwords shorter
-	 * than 6 characters
-	 */
-
 	nLen = strlen (pPasswd);
-	if ( nLen < 6) {
-		mem_len = realloc_error_message(&szErrStr, mem_len,
-				strlen(PASSWORD_TOO_SHORT_SZ) +
-				strlen(pEntry->e_name.bv_val) + 1);
-		sprintf (szErrStr, PASSWORD_TOO_SHORT_SZ, pEntry->e_name.bv_val, nLen);
-		goto fail;
-	}
 
   if (read_config_file() == -1) {
     syslog(LOG_ERR, "Warning: Could not read values from config file %s. Using defaults.", CONFIG_FILE);
@@ -392,46 +381,38 @@ check_password (char *pPasswd, char **ppErrStr, Entry *pEntry)
    */
 
   if ( max_consecutive_per_class != 0 ) {
-    int consec_chars = 1;
-    char type[10] = "unkown";
-    char prev_type[10] = "unknown";
+    char prev_type = '\0';
+    char this_type = ' ';
+    i = 0;
+    int consec_chars = 0;
     for ( i = 0; i < nLen; i++ ) {
-
       if ( islower(pPasswd[i]) ) {
-        strncpy(type,"lower",10);
+        this_type = 'l';
       }
       else if ( isupper(pPasswd[i]) ) {
-        strncpy(type,"upper",10);
+        this_type = 'u';
       }
       else if ( isdigit(pPasswd[i]) ) {
-        strncpy(type,"digit",10);
+        this_type = 'd';
       }
       else if ( ispunct(pPasswd[i]) ) {
-        strncpy(type,"punct",10);
+        this_type = 'p';
       }
       else {
-        strncpy(type,"unknown",10);
+        this_type = ' ';
       }
-
-      if ( consec_chars > max_consecutive_per_class ) {
-				mem_len = realloc_error_message(&szErrStr, mem_len,
-						strlen(CONSEC_FAIL_SZ) +
-						strlen(pEntry->e_name.bv_val));
-				sprintf (szErrStr, CONSEC_FAIL_SZ, pEntry->e_name.bv_val);
-				goto fail;
+      if (this_type == prev_type) {
+        ++consec_chars;
+      } else if (i > 0) {
+        consec_chars = 0;
       }
-
-      if ( strncmp(type,prev_type,10) == 0 ) {
-        consec_chars++;
-      }
-      else {
-        if (strncmp("unknown",prev_type,8) != 0) {
-          consec_chars = 1;
-        }
-        else {
-          consec_chars++;
-        }
-        strncpy(prev_type,type,10);
+      prev_type = this_type;
+      if ( consec_chars >= max_consecutive_per_class ) {
+        mem_len = realloc_error_message(&szErrStr, mem_len,
+          strlen(CONSEC_FAIL_SZ) +
+          strlen(pEntry->e_name.bv_val));
+        sprintf (szErrStr, CONSEC_FAIL_SZ, pEntry->e_name.bv_val);
+        goto fail;
       }
     }
   }
