@@ -93,7 +93,7 @@ will produce 'cpass' which will run the tests defined in check_password_test.c.
 It is highly suggested that you use this if you are going to modify
 check_password.c.
 
-You'll need to run cpass with: LD_LIBRARY_PATH=. ./cpass
+You'll need to run cpass with: ``LD_LIBRARY_PATH=. ./cpass``
 
 
 ## USAGE
@@ -163,7 +163,7 @@ Use at your own risk.
 
 ## TODO
 
-- use proper malloc function, see ITS#4998
+- use proper malloc function, see [ITS#4998](http://www.openldap.org/its/index.cgi/Archive.Incoming?selectid=4998;usearchives=1;statetype=-1)
 - get rid of GOTO's
 
 
