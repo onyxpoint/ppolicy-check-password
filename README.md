@@ -96,11 +96,12 @@ headers”](https://bugs.launchpad.net/ubuntu/+source/openldap/+bug/1210144),
 OpenLdap must be built prior to building ``ppolicy-check-password``:
 
 1. ``sudo aptitude install devscripts build-essential``
-2. ``sudo apt-cache source openldap``
-3. ``cd openldap-<version>``
-4. ``debuild -us -uc -b``
-5. ...
-6. Profit!
+2. ``sudo apt-get build-dep openldap``
+3. ``apt-get source openldap``
+4. ``cd openldap-<version>``
+5. ``debuild -us -uc -b``
+6. ...
+7. Profit!
 
 
 ## TESTING
@@ -122,7 +123,8 @@ The module depends on a working cracklib installation including wordlist files.
 If the wordlist files are not readable, the cracklib check will be skipped
 silently.
 
-Note: pwdPolicyChecker modules are loaded on *every* password change operation.
+**Note:** pwdPolicyChecker modules are loaded on *every* password change
+operation.
 
 ## Configuration
 
