@@ -95,7 +95,7 @@ Unfortunately, due to [Bug #1210144 “package should include slapd
 headers”](https://bugs.launchpad.net/ubuntu/+source/openldap/+bug/1210144),
 OpenLdap must be built prior to building ``ppolicy-check-password``:
 
-1. ``sudo aptitude install devscripts build-essential``
+1. ``sudo apt-get install devscripts build-essential``
 2. ``sudo apt-get build-dep openldap``
 3. ``apt-get source openldap``
 4. ``cd openldap-<version>``
