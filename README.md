@@ -70,6 +70,9 @@ path to match with the OpenLDAP module path in the Makefile.
 
 The module may be defined with slapd.conf parameter "modulepath".
 
+
+### Red Hat
+
 On Red Hat systems, you will need to download the openldap source RPM that you
 want to build against and perform the following steps:
 
@@ -84,6 +87,21 @@ want to build against and perform the following steps:
          $src_dir/libraries $src_dir/servers .``
 
 Then, the Makefile should work properly.
+
+
+### Ubuntu
+
+Unfortunately, due to [Bug #1210144 “package should include slapd headers” :
+Bugs : openldap package :
+Ubuntu](https://bugs.launchpad.net/ubuntu/+source/openldap/+bug/1210144),
+OpenLdap must be built prior to building ``ppolicy-check-password``:
+
+1. ``sudo aptitude install devscripts build-essential``
+2. ``sudo apt-cache source openldap``
+3. ``cd openldap-<version>``
+4. ``debuild -us -uc -b``
+5. ...
+6. Profit!
 
 
 ## TESTING
