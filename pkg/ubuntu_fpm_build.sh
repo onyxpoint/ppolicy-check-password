@@ -14,8 +14,7 @@ description='A password policy overlay that provides the ability to:
    is limited.'
 license=OpenLDAP
 config=/etc/ldap/check_password.conf
-url="$(git remote -v \
-    | head -n1 \
+url="$(git remote -v | head -n1 \
     | sed -e's#^.*:#https://github.com/#' -e's#[.]git.*$##')"
 includes="-I$(ls -1d $(pwd)/openldap/openldap-*/debian/build/include)\
  -I$(ls -1d $(pwd)/openldap/openldap-*/include)\
@@ -69,4 +68,5 @@ fpm \
     -C layout \
     . \
     || cleanup_and_abort
+make -f Makefile.ubuntu clean || cleanup_and_abort
 cleanup
