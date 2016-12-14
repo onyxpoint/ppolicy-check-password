@@ -50,10 +50,10 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-# Ubuntu
-openldap-*/
-*.build
+# build artifacts
+cpass
+
+# Debian/Ubuntu
+openldap
+Makefile.ubuntu
 *.deb
-*.diff.gz
-*.dsc
-*.tar.gz
