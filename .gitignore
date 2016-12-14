@@ -57,3 +57,6 @@ cpass
 openldap
 Makefile.ubuntu
 *.deb
+
+# vim
+*.swp
