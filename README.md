@@ -96,25 +96,25 @@ headers”](https://bugs.launchpad.net/ubuntu/+source/openldap/+bug/1210144),
 OpenLdap must be built prior to building ``ppolicy-check-password``:
 
 1. Install required packages:
-
-    sudo apt-get install build-essential devscripts libcrack2-dev \
-        libldap2-dev ruby-dev
-    sudo apt-get build-dep openldap
-    sudo gem install fpm
-
+```
+sudo apt-get install build-essential devscripts libcrack2-dev libldap2-dev \
+    ruby-dev
+sudo apt-get build-dep openldap
+sudo gem install fpm
+```
 2. Build OpenLDAP:
-
-    mkdir -f openldap
-    cd openldap
-    apt-get source openldap
-    cd openldap-*
-    debuild -us -uc -b
-    cd ../..
-
+```
+mkdir -f openldap
+cd openldap
+apt-get source openldap
+cd openldap-*
+debuild -us -uc -b
+cd ../..
+```
 3. Build Ubuntu package
-
-    ./pkg/ubuntu_fpm_build.sh
-
+```
+./pkg/ubuntu_fpm_build.sh
+```
 
 ## TESTING
 
@@ -174,14 +174,16 @@ If a user password is rejected by an OpenLDAP pwdChecker module, the user will
 **not** get a detailed error message, this is by design.
 
 Typical user message from ldappasswd(5):
-
-    Result: Constraint violation (19)
-    Additional info: Password fails quality checking policy
+```
+Result: Constraint violation (19)
+Additional info: Password fails quality checking policy
+```
 
 A more detailed message is written to the server log. Server log:
-
-    check_password_quality: module error: (check_password.so)
-    Password for dn=".." does not pass required number of strength checks (2 of 3)
+```
+check_password_quality: module error: (check_password.so)
+Password for dn=".." does not pass required number of strength checks (2 of 3)
+```
 
 
 ## Caveats
