@@ -96,25 +96,37 @@ headers”](https://bugs.launchpad.net/ubuntu/+source/openldap/+bug/1210144),
 OpenLdap must be built prior to building ``ppolicy-check-password``:
 
 1. Install required packages:
-```
-sudo apt-get install build-essential devscripts libcrack2-dev libldap2-dev \
-    ruby-dev
-sudo apt-get build-dep openldap
-sudo gem install fpm
-```
+
+    ```
+    sudo apt-get install build-essential devscripts libcrack2-dev libldap2-dev \
+        ruby-dev
+    sudo apt-get build-dep openldap
+    sudo gem install fpm
+    ```
+
 2. Build OpenLDAP:
-```
-mkdir -f openldap
-cd openldap
-apt-get source openldap
-cd openldap-*
-debuild -us -uc -b
-cd ../..
-```
+
+    ```
+    mkdir -f openldap
+    cd openldap
+    apt-get source openldap
+    cd openldap-*
+    debuild -us -uc -b
+    cd ../..
+    ```
+
 3. Build Ubuntu package
-```
-./pkg/ubuntu_fpm_build.sh
-```
+
+    ```
+    ./pkg/ubuntu_fpm_build.sh
+    ```
+
+4. View package to verify contents:
+
+    ```
+    less *.deb
+    ```
+
 
 ## TESTING
 
