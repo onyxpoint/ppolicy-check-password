@@ -15,34 +15,62 @@ description='A password policy overlay that provides the ability to:
 license=OpenLDAP
 config=/etc/ldap/check_password.conf
 url="$(git remote -v | head -n1 \
-    | sed -e's#^.*:#https://github.com/#' -e's#[.]git.*$##')"
+    | sed -e's@^.*:@https://github.com/@' -e's@[.]git.*$@@')"
 includes="-I$(ls -1d $(pwd)/openldap/openldap-*/debian/build/include)\
  -I$(ls -1d $(pwd)/openldap/openldap-*/include)\
  -I$(ls -1d $(pwd)/openldap/openldap-*/servers/slapd)\
 "
 
 update_makefile() {
+    # Update config path to match slapd
+    # Update includes path for Ubuntu openldap
+    # Disable cracklib
+    # (resolves error: lt_dlopen failed: (check_password.so) file not found.)
     cp -av Makefile Makefile.ubuntu
     sed -r -i \
-        -e's#^(INCS=)\$\(LDAP_INC\) \$\(CRACK_INC\)$#\1'"${includes}"'#' \
-        -e's#^(CONFIG=)/etc/openldap/check_password.conf$#\1'"${config}"'#' \
+        -e"s@^(CONFIG=).*\$@\1${config}@" \
+        -e"s@^(INCS=).*\$@\1${includes}@" \
+        -e"/-DHAVE_CRACKLIB/d" \
+        -e"s@^(CRACKLIB_LIB=.*)\$@#\1@" \
+        -e"s@^(LIBS=[^ ]+).*\$@\1@" \
         Makefile.ubuntu
+    cp -av Makefile.ubuntu Makefile.ubuntu.test
+    sed -r -i \
+        -e"s@^(CONFIG=).*\$@\1check_password.conf.test@" \
+        Makefile.ubuntu.test
 }
 
 prep_layout() {
     # doc
     local _doc=layout/usr/share/doc/${name}
     mkdir -pv ${_doc}
-    cp -v *.md LICENSE ${_doc}/
+    cp -av *.md LICENSE ${_doc}/
     # shared object
     local _ldap=layout/usr/lib/ldap
+    local _so=check_password.so
     mkdir -pv ${_ldap}
-    cp -v check_password.so ${_ldap}/
+    strip -v ${_so} -o ${_ldap}/${_so}.${version}
+    # shared object symlink
+    # workaround https://github.com/jordansissel/fpm/issues/1018
+    {
+        echo '#!/bin/sh'
+        echo 'cd /usr/lib/ldap'
+        echo "ln -fnsv ${_so}.${version} ${_so}"
+    } > create_symlink.sh
+    {
+        echo '#!/bin/sh'
+        echo "rm -fv /usr/lib/ldap/${_so}"
+    } > remove_symlink.sh
+    # fix permissions
+    find layout -type f -exec chmod 0644 {} +
 }
 
 cleanup() {
-    rm -fv Makefile.ubuntu
+    rm -fv Makefile.ubuntu*
+    rm -fv check_password.conf.test
+    rm -fv *_symlink.sh
     rm -rfv layout
+    make clean || true
 }
 
 cleanup_and_abort() {
@@ -53,9 +81,11 @@ cleanup_and_abort() {
 }
 
 update_makefile
+make -f Makefile.ubuntu.test check_password_test || cleanup_and_abort
+LD_LIBRARY_PATH=. ./cpass || cleanup_and_abort
 make -f Makefile.ubuntu check_password || cleanup_and_abort
 prep_layout
-fpm \
+fpm --verbose \
     -t deb \
     -s dir \
     --force \
@@ -65,8 +95,10 @@ fpm \
     --version "${version}" \
     --description "${description}" \
     --url "${url}" \
+    --after-install create_symlink.sh \
+    --after-upgrade create_symlink.sh \
+    --after-remove remove_symlink.sh \
     -C layout \
     . \
     || cleanup_and_abort
-make -f Makefile.ubuntu clean || cleanup_and_abort
 cleanup
