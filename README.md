@@ -36,8 +36,8 @@ LSC](http://tools.ltb-project.org/projects/ltb/files).
 
 ## Password checks
 
-- passwords shorter than 6 characters are rejected if cracklib is used (because
-  cracklib WILL reject them).
+- passwords shorter than 6 characters are rejected (also note that cracklib
+  rejects passwords shorter than 6 characters)
 - syntactic checks controls how many different character classes are used
   (lower, upper, digit and punctuation characters). The minimum number of
   classes is defined in a configuration file. You can set the minimum for each
