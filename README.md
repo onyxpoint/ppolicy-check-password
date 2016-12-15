@@ -98,8 +98,7 @@ OpenLdap must be built prior to building ``ppolicy-check-password``:
 1. Install required packages:
 
     ```
-    sudo apt-get install build-essential devscripts libcrack2-dev libldap2-dev \
-        ruby-dev
+    sudo apt-get install build-essential devscripts libldap2-dev ruby-dev
     sudo apt-get build-dep openldap
     sudo gem install fpm
     ```
