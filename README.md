@@ -158,26 +158,40 @@ given their default value.
 
 The syntax of the file is:
 
-    parameter value
+```
+parameter value
+```
 
 with spaces being delimiters. Parameter names ARE case sensitive (this may
 change in the future).
 
 Current parameters:
 
--  ``use_cracklib``: integer. Default value: 1. Set it to 0 to disable cracklib
-   verification. It has no effect if cracklib is not included at compile time.
--  ``min_points``: integer. Default value: 3. Minimum number of quality points a
-   new password must have to be accepted. One quality point is awarded for
-   each character class used in the password.
-- ``min_upper``: integer. Defaut value: 0. Minimum upper characters expected.
-- ``min_lower``: integer. Defaut value: 0. Minimum lower characters expected.
-- ``min_digit``: integer. Defaut value: 0. Minimum digit characters expected.
-- ``min_punct``: integer. Defaut value: 0. Minimum punctuation characters
-  expected.
 - ``max_consecutive_per_class``: integer. Default value: 5. Maximum number of
   characters that can appear consecutively from a given character class. 0
   disables.
+- ``min_digit``: integer. Defaut value: 0. Minimum digit characters expected.
+- ``min_lower``: integer. Defaut value: 0. Minimum lower characters expected.
+- ``min_points``: integer. Default value: 3. Minimum number of quality points a
+  new password must have to be accepted. One quality point is awarded for
+  each character class used in the password.
+- ``min_punct``: integer. Defaut value: 0. Minimum punctuation characters
+  expected.
+- ``min_upper``: integer. Defaut value: 0. Minimum upper characters expected.
+- ``use_cracklib``: integer. Default value: 1. Set it to 0 to disable cracklib
+  verification. It has no effect if cracklib is not included at compile time.
+
+Example with defaults:
+
+```
+max_consecutive_per_class 5
+min_digit 0
+min_lower 0
+min_points 3
+min_punct 0
+min_upper 0
+use_cracklib 1
+```
 
 
 ## Logs
