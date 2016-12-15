@@ -199,13 +199,16 @@ use_cracklib 1
 If a user password is rejected by an OpenLDAP pwdChecker module, the user will
 **not** get a detailed error message, this is by design.
 
-Typical user message from ldappasswd(5):
+Typical user message from
+[ldappasswd(1)](http://www.openldap.org/software/man.cgi?query=ldappasswd&apropos=0&sektion=0&manpath=OpenLDAP+2.4-Release&format=html):
+
 ```
 Result: Constraint violation (19)
 Additional info: Password fails quality checking policy
 ```
 
 A more detailed message is written to the server log. Server log:
+
 ```
 check_password_quality: module error: (check_password.so)
 Password for dn=".." does not pass required number of strength checks (2 of 3)
