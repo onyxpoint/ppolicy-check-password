@@ -49,7 +49,7 @@ prep_layout() {
     local _ldap=layout/usr/lib/ldap
     local _so=check_password.so
     mkdir -pv ${_ldap}
-    strip -v ${_so} -o ${_ldap}/${_so}.${version}
+    strip -p -v ${_so} -o ${_ldap}/${_so}.${version}
     # shared object symlink
     # workaround https://github.com/jordansissel/fpm/issues/1018
     {
