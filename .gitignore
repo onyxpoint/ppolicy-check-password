@@ -60,3 +60,6 @@ Makefile.ubuntu
 
 # vim
 *.swp
+
+# Timid
+build.sh
