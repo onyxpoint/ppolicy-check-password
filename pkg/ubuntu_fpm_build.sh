@@ -22,18 +22,19 @@ includes="-I$(ls -1d $(pwd)/openldap/openldap-*/debian/build/include)\
 "
 
 update_makefile() {
+    cp -av Makefile Makefile.ubuntu
     # Update config path to match slapd
+    sed -r -i -e"s@^(CONFIG=).*\$@\1${config}@" Makefile.ubuntu
     # Update includes path for Ubuntu openldap
+    sed -r -i    -e"s@^(INCS=).*\$@\1${includes}@" Makefile.ubuntu
     # Disable cracklib
     # (resolves error: lt_dlopen failed: (check_password.so) file not found.)
-    cp -av Makefile Makefile.ubuntu
     sed -r -i \
-        -e"s@^(CONFIG=).*\$@\1${config}@" \
-        -e"s@^(INCS=).*\$@\1${includes}@" \
         -e"/-DHAVE_CRACKLIB/d" \
         -e"s@^(CRACKLIB_LIB=.*)\$@#\1@" \
         -e"s@^(LIBS=[^ ]+).*\$@\1@" \
         Makefile.ubuntu
+
     cp -av Makefile.ubuntu Makefile.ubuntu.test
     sed -r -i \
         -e"s@^(CONFIG=).*\$@\1check_password.conf.test@" \
@@ -49,7 +50,8 @@ prep_layout() {
     local _ldap=layout/usr/lib/ldap
     local _so=check_password.so
     mkdir -pv ${_ldap}
-    strip -p -v ${_so} -o ${_ldap}/${_so}.${version}
+    # http://people.canonical.com/~cjwatson/ubuntu-policy/policy.html/ch-files.html#s-libraries
+    strip --strip-unneeded -p -v ${_so} -o ${_ldap}/${_so}.${version}
     # shared object symlink
     # workaround https://github.com/jordansissel/fpm/issues/1018
     {
