@@ -93,7 +93,7 @@ Then, the Makefile should work properly.
 
 Unfortunately, due to [Bug #1210144 “package should include slapd
 headers”](https://bugs.launchpad.net/ubuntu/+source/openldap/+bug/1210144),
-OpenLdap must be built prior to building ``ppolicy-check-password``:
+OpenLDAP must be built prior to building ``ppolicy-check-password``:
 
 1. Install required packages:
 
@@ -128,7 +128,7 @@ OpenLdap must be built prior to building ``ppolicy-check-password``:
     ```
 
 **Note:** You will also need to install `libcrack2-dev` on the host where you
-install  `slapd`. Otherwise, you will recedive the following (misleading)
+install  `slapd`. Otherwise, you will receive the following (misleading)
 error:
 
 ```
@@ -139,18 +139,18 @@ check_password_quality: lt_dlopen failed: (check_password.so) file not found.
 
 ## TESTING
 
-An application is provided to build tests for check_password.c. The Makefile
-will produce 'cpass' which will run the tests defined in check_password_test.c.
-It is highly suggested that you use this if you are going to modify
-check_password.c.
+An application is provided to build tests for ``check_password.c``. The
+Makefile will produce ``cpass`` which will run the tests defined in
+check_password_test.c.  It is highly suggested that you use this if you are
+going to modify ``check_password.c``.
 
 You'll need to run cpass with: ``LD_LIBRARY_PATH=. ./cpass``
 
 
 ## USAGE
 
-To use this module you need to add objectClass pwdPolicyChecker with an
-attribute 'pwdCheckModule: check_password.so' to a password policy entry.
+To use this module you need to add ``objectClass pwdPolicyChecker`` with an
+attribute ``pwdCheckModule: check_password.so`` to a password policy entry.
 
 The module depends on a working cracklib installation including wordlist files.
 If the wordlist files are not readable, the cracklib check will be skipped
@@ -158,6 +158,7 @@ silently.
 
 **Note:** pwdPolicyChecker modules are loaded on *every* password change
 operation.
+
 
 ## Configuration
 
