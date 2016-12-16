@@ -13,6 +13,7 @@ description='A password policy overlay that provides the ability to:
  - Ensure that the number of consecutive characters used from a character set
    is limited.'
 license=OpenLDAP
+section=universe/net
 config=/etc/ldap/check_password.conf
 include_cracklib=1
 url="$(git remote -v | head -n1 \
@@ -100,6 +101,9 @@ fpm --verbose \
     --version "${version}" \
     --description "${description}" \
     --url "${url}" \
+    --depends libcrack2 \
+    --depends slapd \
+    --category ${section} \
     --after-install create_symlink.sh \
     --after-upgrade create_symlink.sh \
     --after-remove remove_symlink.sh \
