@@ -14,6 +14,7 @@ description='A password policy overlay that provides the ability to:
    is limited.'
 license=OpenLDAP
 config=/etc/ldap/check_password.conf
+include_cracklib=1
 url="$(git remote -v | head -n1 \
     | sed -e's@^.*:@https://github.com/@' -e's@[.]git.*$@@')"
 includes="-I$(ls -1d $(pwd)/openldap/openldap-*/debian/build/include)\
@@ -27,14 +28,16 @@ update_makefile() {
     sed -r -i -e"s@^(CONFIG=).*\$@\1${config}@" Makefile.ubuntu
     # Update includes path for Ubuntu openldap
     sed -r -i    -e"s@^(INCS=).*\$@\1${includes}@" Makefile.ubuntu
-    # Disable cracklib
-    # (resolves error: lt_dlopen failed: (check_password.so) file not found.)
-    sed -r -i \
-        -e"/-DHAVE_CRACKLIB/d" \
-        -e"s@^(CRACKLIB_LIB=.*)\$@#\1@" \
-        -e"s@^(LIBS=[^ ]+).*\$@\1@" \
-        Makefile.ubuntu
-
+    if (( include_cracklib != 1 ))
+    then
+        # Disable cracklib. Resolves error:
+        #   lt_dlopen failed: (check_password.so) file not found.
+        sed -r -i \
+            -e"/-DHAVE_CRACKLIB/d" \
+            -e"s@^(CRACKLIB_LIB=.*)\$@#\1@" \
+            -e"s@^(LIBS=[^ ]+).*\$@\1@" \
+            Makefile.ubuntu
+    fi
     cp -av Makefile.ubuntu Makefile.ubuntu.test
     sed -r -i \
         -e"s@^(CONFIG=).*\$@\1check_password.conf.test@" \

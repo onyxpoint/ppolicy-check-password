@@ -98,7 +98,8 @@ OpenLdap must be built prior to building ``ppolicy-check-password``:
 1. Install required packages:
 
     ```
-    sudo apt-get install build-essential devscripts libldap2-dev ruby-dev
+    sudo apt-get install build-essential devscripts libcrack2-dev \
+        libldap2-dev ruby-dev
     sudo apt-get build-dep openldap
     sudo gem install fpm
     ```
@@ -125,6 +126,15 @@ OpenLdap must be built prior to building ``ppolicy-check-password``:
     ```
     less *.deb
     ```
+
+**Note:** You will also need to install `libcrack2-dev` on the host where you
+install  `slapd`. Otherwise, you will recedive the following (misleading)
+error:
+
+```
+check_password_quality: lt_dlopen failed: (check_password.so) file not found.
+```
+
 
 
 ## TESTING
