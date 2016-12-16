@@ -127,7 +127,7 @@ OpenLDAP must be built prior to building ``ppolicy-check-password``:
     less *.deb
     ```
 
-**Note:** You will also need to install `libcrack2-dev` on the host where you
+**Note:** You will also need to install `libcrack2` on the host where you
 install  `slapd`. Otherwise, you will receive the following (misleading)
 error:
 
