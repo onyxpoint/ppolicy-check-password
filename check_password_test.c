@@ -1,7 +1,7 @@
 /*
  * check_password_test.c for OpenLDAP
  *
- * See LICENSE, README and INSTALL files
+ * See LICENSE, README.md, and INSTALL.md files
  */
 #include <stdio.h>
 #include <string.h>

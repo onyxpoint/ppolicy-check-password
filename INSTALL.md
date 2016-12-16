@@ -1,13 +1,14 @@
-INSTALLATION
-============
+# INSTALLATION
 
-Build dependencies
-------------------
+
+## Build dependencies
+
 cracklib header files (link with -lcrack). The Makefile does not look for
 cracklib; you may need to provide the paths manually.
 
-Build
------
+
+## Build
+
 Use the provided Makefile to build the module.
 
 Copy the resulting check_password.so into the OpenLDAP modulepath.
@@ -16,16 +17,16 @@ Or, change the installation path to match with the OpenLDAP module path in the
 Makefile and use 'make install'.
 
 
-USAGE
-=====
-Add objectClass 'pwdPolicyChecker' with an attribute
+## USAGE
 
-   pwdCheckModule: check_password.so
+Add objectClass ``pwdPolicyChecker`` with an attribute
+
+    pwdCheckModule: check_password.so
 
 to a password policy entry.
 
 The module depends on a working cracklib installation including wordlist files.
 If the wordlist files are not readable, the cracklib check will be skipped
-silently. 
+silently.
 
 But you can use this module without cracklib, just checks for syntatic checks.
